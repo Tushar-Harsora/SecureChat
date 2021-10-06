@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 import { User } from '../_models/User';
+import { RegisterEmailRequest } from '../_models/RegisterEmailRequest';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
@@ -22,12 +23,21 @@ export class AuthenticationService {
     }
 
     login(username: string, password: string) {
-        return this.http.post<any>(`${environment.apiUrl}/users/authenticate`, { username, password })
+        return this.http.post<any>(`${environment.apiUrl}/api/User/AuthenticateByEmail`, { username, password })
             .pipe(map(user => {
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
                 localStorage.setItem('currentUser', JSON.stringify(user));
                 this.currentUserSubject.next(user);
                 return user;
+            }));
+    }
+
+    register(email: string, public_key: string){
+        return this.http.post<any>(`${environment.apiUrl}/api/User/RegisterByEmail`, {email, public_key})
+            .pipe(map(response => {
+                console.log(response);
+                debugger;
+                return response;
             }));
     }
 

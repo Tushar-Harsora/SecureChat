@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { first } from 'rxjs/operators';
+import { RegisterEmailRequest } from 'src/app/_models/RegisterEmailRequest';
 import { AuthenticationService } from 'src/app/_services';
+declare var JSEncrypt: any;
 
 @Component({
   selector: 'app-register',
@@ -38,17 +40,16 @@ export class RegisterComponent implements OnInit {
 
   onSubmit(){
     this.submitted = true;
-    // stop here if form is invalid
-    if (this.userForm?.invalid) {
-        return;
-    }
 
     this.loading = true;
-    this.authenticationService.login(this.f?.username.value, this.f?.password.value)
+    const jsenc = new JSEncrypt({default_key_size: 2048});
+    var pub_priv = {PublicKey: jsenc.getPublicKey(), PrivateKey: jsenc.getPrivateKey()};
+    const s = new RegisterEmailRequest(this.f?.email.value, pub_priv.PublicKey);
+    this.authenticationService.register(this.f?.email.value, pub_priv.PublicKey)
         .pipe(first())
         .subscribe(
             data => {
-                this.router.navigate([this.returnUrl]);
+                this.router.navigate(["signin"]);
             },
             error => {
                 this.error = error;
