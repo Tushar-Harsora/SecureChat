@@ -25,6 +25,7 @@ export class RegisterComponent implements OnInit {
     private authenticationService: AuthenticationService
   ) {
     console.log(this.authenticationService.currentUserValue) 
+    this.loading = false;
     if(this.authenticationService.currentUserValue.id !== -1)
       this.router.navigate(['home']);
   }
@@ -44,6 +45,8 @@ export class RegisterComponent implements OnInit {
     this.loading = true;
     const jsenc = new JSEncrypt({default_key_size: 2048});
     var pub_priv = {PublicKey: jsenc.getPublicKey(), PrivateKey: jsenc.getPrivateKey()};
+    this.show_alert("Save Your Public Key: ", btoa(pub_priv.PublicKey));
+    this.show_alert("Save Your Private Key: ", btoa(pub_priv.PrivateKey));
     const s = new RegisterEmailRequest(this.f?.email.value, pub_priv.PublicKey);
     this.authenticationService.register(this.f?.email.value, pub_priv.PublicKey)
         .pipe(first())
@@ -56,5 +59,10 @@ export class RegisterComponent implements OnInit {
                 this.loading = false;
             });
 
+  }
+
+  show_alert(prompt_text: String, body: String){
+    window.prompt(prompt_text.toString(), body.toString());
+    // window.alert(body);
   }
 }
