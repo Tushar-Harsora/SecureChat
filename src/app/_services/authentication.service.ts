@@ -22,8 +22,8 @@ export class AuthenticationService {
         return this.currentUserSubject.value;
     }
 
-    login(username: string, password: string) {
-        return this.http.post<any>(`${environment.apiUrl}/api/User/AuthenticateByEmail`, { username, password })
+    login(Email: string, signedText: string) {
+        return this.http.post<User>(`${environment.apiUrl}/api/User/AuthenticateByEmail`, { Email, signedText })
             .pipe(map(user => {
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
                 localStorage.setItem('currentUser', JSON.stringify(user));
@@ -36,7 +36,6 @@ export class AuthenticationService {
         return this.http.post<any>(`${environment.apiUrl}/api/User/RegisterByEmail`, {email, public_key})
             .pipe(map(response => {
                 console.log(response);
-                debugger;
                 return response;
             }));
     }

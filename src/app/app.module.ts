@@ -12,6 +12,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { JwtInterceptor, ErrorInterceptor } from './_helpers';
+import { FileSaverModule } from 'ngx-filesaver';
+import { LogoutComponent } from './components/logout/logout.component';
 
 
 @NgModule({
@@ -19,7 +21,8 @@ import { JwtInterceptor, ErrorInterceptor } from './_helpers';
     AppComponent,
     SigninComponent,
     RegisterComponent,
-    HomeComponent
+    HomeComponent,
+    LogoutComponent
   ],
   imports: [
     BrowserModule,
@@ -29,7 +32,8 @@ import { JwtInterceptor, ErrorInterceptor } from './_helpers';
     FlexLayoutModule,
     FormsModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    FileSaverModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
