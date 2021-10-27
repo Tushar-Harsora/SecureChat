@@ -14,6 +14,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { JwtInterceptor, ErrorInterceptor } from './_helpers';
 import { FileSaverModule } from 'ngx-filesaver';
 import { LogoutComponent } from './components/logout/logout.component';
+import { NbChatModule, NbFocusMonitor, NbLayoutModule, NbStatusService, NbThemeModule } from '@nebular/theme';
 
 
 @NgModule({
@@ -33,9 +34,14 @@ import { LogoutComponent } from './components/logout/logout.component';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    FileSaverModule
+    FileSaverModule,
+    NbThemeModule.forRoot(),
+    NbChatModule,
+    NbLayoutModule,
   ],
   providers: [
+    NbStatusService,
+    NbFocusMonitor,
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true}
   ],
