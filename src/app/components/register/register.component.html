@@ -1,5 +1,5 @@
 <div class="main-wrapper" fxLayout="row" fxLayoutAlign="center center">
-    <mat-card class="box">
+    <mat-card class="box" fxFlex="40%">
       <mat-card-header>
         <mat-card-title>Register</mat-card-title>
       </mat-card-header>
@@ -19,12 +19,9 @@
                             Please enter a valid email address
                         </mat-error>
                     </mat-form-field>
-                </mat-tab>
-
-                <mat-tab label="Username">
                     <mat-form-field class="example-full-width">
-                        <input matInput formControlName="username" placeholder="Username">
-                    </mat-form-field>
+                      <input matInput formControlName="username" placeholder="Username">
+                  </mat-form-field>
                 </mat-tab>
                 
                 <mat-tab label="Phone Number" disabled>PhoneNumber</mat-tab>
