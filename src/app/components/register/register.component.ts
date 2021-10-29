@@ -49,8 +49,9 @@ export class RegisterComponent implements OnInit {
     var pub_priv = {PublicKey: jsenc.getPublicKey(), PrivateKey: jsenc.getPrivateKey()};
     this.save_text("private_key", btoa(pub_priv.PrivateKey));
     
-    const s = new RegisterEmailRequest(this.f?.email.value, pub_priv.PublicKey);
-    this.authenticationService.register(this.f?.email.value, pub_priv.PublicKey)
+    const username: string = this.f?.username.value;
+    const s = new RegisterEmailRequest(this.f?.email.value, username, pub_priv.PublicKey);
+    this.authenticationService.register(this.f?.email.value, username, pub_priv.PublicKey)
         .pipe(first())
         .subscribe(
             data => {

@@ -1,15 +1,24 @@
+import { Message } from '@angular/compiler/src/i18n/i18n_ast';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { map } from 'rxjs/operators';
+import { PreviouslyContactedUser } from 'src/app/_models/PreviouslyContactedUser';
+import { ChatroomService } from 'src/app/_services/chatroom.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.sass'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class HomeComponent implements OnInit {
+  _chatroomService: ChatroomService;
+  _previousContacted: PreviouslyContactedUser[];
+  _previousLoaded: Boolean;
+  _currentMessages: Message[];
+  _messagesLoaded: Boolean;
   
   readonly tableData = {
-    columns: [ 'First Name', 'Last Name', 'Age' ],
+    columns: ['First Name', 'Last Name', 'Age'],
     rows: [
       { firstName: 'Robert', lastName: 'Baratheon', age: 46 },
       { firstName: 'Jaime', lastName: 'Lannister', age: 31 },
@@ -18,11 +27,20 @@ export class HomeComponent implements OnInit {
 
   messages: any[] = [];
 
-  constructor() {
+  constructor(private chatroomService: ChatroomService) {
     this.loadMessages();
+    this._chatroomService = chatroomService;
+    this._previousContacted = [];
+    this._previousLoaded = false;
+    this._currentMessages = [];
+    this._messagesLoaded = false;
   }
 
   ngOnInit(): void {
+    this._chatroomService.getPreviouslyContacted().subscribe(result =>{
+      this._previousContacted = result;
+      this._previousLoaded = true;
+    });
   }
 
   sendMessage(event: any): void {
@@ -33,19 +51,27 @@ export class HomeComponent implements OnInit {
       type: 'text',
       user: {
         name: 'Gandalf the Grey',
-        avatar: 'https://i.gifer.com/no.gif',
+        avatar: 'https://i.gifer.com/no.gif', 
       },
     });
   }
 
+  getConversation(uid: Number){
+    console.log(`Fetching conversation for userid ${uid}`);
+    return ;
+    this._chatroomService.getConversation(uid).subscribe(result =>{
+      this._currentMessages = result;
+      this._messagesLoaded = true;
+    }); 
+  }
   private loadMessages(): void {
     this.messages = [
       {
         type: 'link',
         text: 'Now you able to use links!',
         customMessageData: {
-          href: 'https://akveo.github.io/nebular/',
-          text: 'Go to Nebular',
+          href: 'https://google.com/',
+          text: 'Go to Google',
         },
         reply: false,
         date: new Date(),
@@ -57,8 +83,8 @@ export class HomeComponent implements OnInit {
       {
         type: 'link',
         customMessageData: {
-          href: 'https://akveo.github.io/ngx-admin/',
-          text: 'Go to ngx-admin',
+          href: 'https://facebook.com/',
+          text: 'Go to Facebook',
         },
         reply: true,
         date: new Date(),
@@ -76,6 +102,14 @@ export class HomeComponent implements OnInit {
           name: 'Gimli Gloin',
           avatar: '',
         },
+      },
+      {
+        type: 'file',
+        files: [{ url: 'https://picsum.photos/320/240/?image=387', type: 'image/jpeg' }],
+        user: {
+          name: 'Gimli Gloin',
+          avatar: '',
+        }
       },
     ]
   }

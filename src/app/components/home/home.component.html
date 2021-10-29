@@ -1,10 +1,20 @@
 <div class="mainContent" fxLayoutAlign="center center" >
   <nb-layout class="chat-content">
       <nb-sidebar class="sidebar" >
-      
+        <ng-container class="singleUser" *ngIf="_previousLoaded; else loading" >
+          <mat-card *ngFor="let user of _previousContacted" class="singleUser" (click)="getConversation(user.uid)">
+            <mat-card-group>
+              <mat-card-title>{{user.username}}</mat-card-title>
+              <h4>{{user.email}}</h4>
+            </mat-card-group>
+          </mat-card>
+        </ng-container>
       </nb-sidebar>
+      <ng-template #loading>
+        <h1>loading</h1>
+      </ng-template>
     <nb-layout-column class="chat-area">
-      <nb-chat #chatComponent title="Nebular Conversational UI" size="large" [scrollBottom]="false">
+      <nb-chat #chatComponent title="Title for Current User" size="large" [scrollBottom]="true">
         <a *nbCustomMessage="'link'; let data" [href]="data.href" target="_blank">
           {{ data.text }}
         </a>
@@ -19,7 +29,7 @@
         </div>
 
         <nb-chat-message *ngFor="let msg of messages" [type]="msg.type" [message]="msg.text" [reply]="msg.reply"
-          [sender]="msg.user.name" [date]="msg.date" [customMessageData]="msg.customMessageData">
+          [sender]="msg.user.name" [date]="msg.date" [customMessageData]="msg.customMessageData" [files]="msg.files">
         </nb-chat-message>
 
         <nb-chat-form (send)="sendMessage($event)" [dropFiles]="false">
