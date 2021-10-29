@@ -32,8 +32,8 @@ export class AuthenticationService {
             }));
     }
 
-    register(email: string, public_key: string){
-        return this.http.post<any>(`${environment.apiUrl}/api/User/RegisterByEmail`, {email, public_key})
+    register(email: string, username: string, public_key: string){
+        return this.http.post<any>(`${environment.apiUrl}/api/User/RegisterByEmail`, {email, username, public_key})
             .pipe(map(response => {
                 console.log(response);
                 return response;
