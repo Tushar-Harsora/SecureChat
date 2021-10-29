@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { map } from 'rxjs/operators';
+import { CustomMessage } from 'src/app/_models/CustomMessage';
 import { Message } from 'src/app/_models/Message';
 import { PreviouslyContactedUser } from 'src/app/_models/PreviouslyContactedUser';
 import { ChatroomService } from 'src/app/_services/chatroom.service';
@@ -14,8 +15,9 @@ export class HomeComponent implements OnInit {
   _chatroomService: ChatroomService;
   _previousContacted: PreviouslyContactedUser[];
   _previousLoaded: Boolean;
-  _currentMessages: Message[];
+  _currentMessages: any[];
   _messagesLoaded: Boolean;
+  _currentChatUser: PreviouslyContactedUser;
   
   readonly tableData = {
     columns: ['First Name', 'Last Name', 'Age'],
@@ -32,8 +34,9 @@ export class HomeComponent implements OnInit {
     this._chatroomService = chatroomService;
     this._previousContacted = [];
     this._previousLoaded = false;
-    this._currentMessages = [];
-    this._messagesLoaded = false;
+    this._currentMessages = this.messages;
+    this._messagesLoaded = true;
+    this._currentChatUser = new PreviouslyContactedUser();
   }
 
   ngOnInit(): void {
@@ -58,9 +61,20 @@ export class HomeComponent implements OnInit {
 
   getConversation(uid: Number){
     console.log(`Fetching conversation for userid ${uid}`);
-    return ;
-    this._chatroomService.getConversation(uid).subscribe(result =>{
-      this._currentMessages = result;
+    const selected = this._previousContacted.find(user => user.uid == uid);
+    this._currentChatUser = selected ? selected : new PreviouslyContactedUser();
+    // return ;
+    this._chatroomService.getConversation(this._currentChatUser.chat_relation_id).subscribe(result =>{
+      // this._currentMessages = result;
+      const fetchedMessages: CustomMessage[] = [];
+      result.forEach(mess => {
+        const fromMe: boolean = mess.receiver_id == this._currentChatUser.uid;
+        console.log(mess);
+        // console.log(`reciever ${mess.receiver_id}   from me: ${fromMe}`);
+        
+        fetchedMessages.push(new CustomMessage('text', mess.message, fromMe, mess.message_at, this._currentChatUser))
+      });
+      this._currentMessages = fetchedMessages;
       this._messagesLoaded = true;
     }); 
   }

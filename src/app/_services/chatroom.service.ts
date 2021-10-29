@@ -20,7 +20,8 @@ export class ChatroomService {
       }));
   }
 
-  getConversation(chat_relation_id: Number){
+  getConversation(chat_relation: Number){
+    const chat_relation_id = chat_relation.toString();
     return this.http.post<Message[]>(`${environment.apiUrl}/Chat/getConversation`, {chat_relation_id})
       .pipe(map(response => {
         return response;
