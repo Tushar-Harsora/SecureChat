@@ -1,6 +1,6 @@
-import { Message } from '@angular/compiler/src/i18n/i18n_ast';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { map } from 'rxjs/operators';
+import { Message } from 'src/app/_models/Message';
 import { PreviouslyContactedUser } from 'src/app/_models/PreviouslyContactedUser';
 import { ChatroomService } from 'src/app/_services/chatroom.service';
 

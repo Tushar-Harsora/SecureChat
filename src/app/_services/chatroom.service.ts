@@ -4,7 +4,7 @@ import { environment } from 'src/environments/environment';
 import { map} from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { PreviouslyContactedUser } from '../_models/PreviouslyContactedUser';
-import { Message } from '@angular/compiler/src/i18n/i18n_ast';
+import { Message } from '../_models/Message';
 
 @Injectable({
   providedIn: 'root'
