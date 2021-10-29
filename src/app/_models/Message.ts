@@ -3,7 +3,7 @@ export class Message {
     sender_id : Number;
     receiver_id: Number;
     chat_relation_id: Number;
-    message : String;
+    message : string;
     message_type_id : Number;
     message_at : Date;
 
