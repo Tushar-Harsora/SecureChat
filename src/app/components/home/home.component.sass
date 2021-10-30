@@ -1,12 +1,39 @@
 .mainContent
     width: 100%
-    height: auto 
-.sidebar 
-    width:30%
-    padding:20px 10px
+    height: auto
+.sidebar
+    width: 30%
+    padding: 5px 10px
 .chat-area
-    width:70%
+    width: 70%
 .chat-content
-    width:100%
+    width: 100%
 .singleUser
-    margin:10px auto
+    margin: 10px auto
+    border: 1px solid #673ab7
+    cursor: pointer
+    color: #673ab7
+.singleUser:hover
+    border: 2px solid
+    box-shadow: 0px 2px 1px -1px rgb(0 0 0 / 50%), 0px 4px 4px 0px rgb(0 0 0 / 20%), 0px 1px 5px 0px rgb(0 0 0 / 20%)
+#firstTimeLoad
+    height: 80vh
+    background: url("../../../assets/Chat-Msg.svg")
+    background-repeat: no-repeat
+    background-position: center
+    border: none
+    background-size: 50%
+.sidebar .loader
+  display: flex
+  justify-content: center
+  align-items: center
+.userEmail 
+    margin: 0px
+.noMsg
+    height: 100vh
+    display: flex
+    align-items: center
+
+.noMsg .card-body
+    display: flex
+    align-items: center

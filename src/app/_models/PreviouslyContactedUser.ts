@@ -7,9 +7,9 @@ export class PreviouslyContactedUser {
 
     constructor(){
         this.uid = -99;
-        this.email = "example@example.com";
+        this.email = "john@gmail.com";
         this.phone_number = "9999999999";
-        this.username = "uninitialized";
+        this.username = "John Doe";
         this.chat_relation_id = -99;
     }
 }

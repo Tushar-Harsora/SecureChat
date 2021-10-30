@@ -6,9 +6,9 @@ export class CustomMessageName{
     name: string;
     avatar: string;
 
-    constructor(username: string, avatar: string = "https://i.gifer.com/no.gif"){
+    constructor(username: string, avatar: string = ""){
         this.name = username;
-        this.avatar = avatar;
+        this.avatar = "https://ui-avatars.com/api/?size=16&name=" + this.name;
     }
 }
 
