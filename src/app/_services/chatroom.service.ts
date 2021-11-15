@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { map} from 'rxjs/operators';
@@ -24,6 +24,15 @@ export class ChatroomService {
     const chat_relation_id = chat_relation.toString();
     return this.http.post<Message[]>(`${environment.apiUrl}/Chat/getConversation`, {chat_relation_id})
       .pipe(map(response => {
+        return response;
+      }));
+  }
+
+  sendMessage(message: Message){
+    const headers = new HttpHeaders().set('Content-Type','application/json')
+
+    return this.http.post<any>(`${environment.apiUrl}/Chat/sendMessage`, JSON.stringify(message), { headers: headers })
+      .pipe(map(response =>{
         return response;
       }));
   }
