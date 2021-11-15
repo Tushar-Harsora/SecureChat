@@ -20,15 +20,15 @@ export class RegisterComponent implements OnInit {
   error: string = "";
 
   constructor(
-    private formBuilder: FormBuilder, 
+    private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
     private authenticationService: AuthenticationService,
     private _FileSaverService: FileSaverService
   ) {
-    console.log(this.authenticationService.currentUserValue) 
+    console.log(this.authenticationService.currentUserValue)
     this.loading = false;
-    if(this.authenticationService.currentUserValue.token && this.authenticationService.currentUserValue.token !== "")
+    if (this.authenticationService.currentUserValue.token && this.authenticationService.currentUserValue.token !== "")
       this.router.navigate(['home']);
   }
 
@@ -41,30 +41,30 @@ export class RegisterComponent implements OnInit {
 
   get f() { return this.userForm?.controls; }
 
-  onSubmit(){
+  onSubmit() {
     this.submitted = true;
 
     this.loading = true;
-    const jsenc = new JSEncrypt({default_key_size: 2048});
-    var pub_priv = {PublicKey: jsenc.getPublicKey(), PrivateKey: jsenc.getPrivateKey()};
-    this.save_text("private_key", btoa(pub_priv.PrivateKey));
-    
+    const jsenc = new JSEncrypt({ default_key_size: 2048 });
+    var pub_priv = { PublicKey: jsenc.getPublicKey(), PrivateKey: jsenc.getPrivateKey() };
+
     const username: string = this.f?.username.value;
     const s = new RegisterEmailRequest(this.f?.email.value, username, pub_priv.PublicKey);
     this.authenticationService.register(this.f?.email.value, username, pub_priv.PublicKey)
-        .pipe(first())
-        .subscribe(
-            data => {
-                this.router.navigate(["signin"]);
-            },
-            error => {
-                this.error = error;
-                this.loading = false;
-            });
+      .pipe(first())
+      .subscribe(
+        data => {
+          this.save_text("private_key", btoa(pub_priv.PrivateKey));
+          this.router.navigate(["signin"]);
+        },
+        error => {
+          this.error = error;
+          this.loading = false;
+        });
 
   }
 
-  save_text(filename: String, body: String){
+  save_text(filename: String, body: String) {
     this._FileSaverService.saveText(body.toString(), filename.toString());
   }
 }

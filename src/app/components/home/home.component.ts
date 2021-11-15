@@ -62,9 +62,10 @@ export class HomeComponent implements OnInit {
   getConversation(uid: Number){
     console.log(`Fetching conversation for userid ${uid}`);
     const selected = this._previousContacted.find(user => user.uid == uid);
-    this._currentChatUser = selected ? selected : new PreviouslyContactedUser();
-    // return ;
-    this._chatroomService.getConversation(this._currentChatUser.chat_relation_id).subscribe(result =>{
+    const thing = selected ? selected : new PreviouslyContactedUser();
+    
+    this._chatroomService.getConversation(thing.chat_relation_id).subscribe(result =>{
+      this._currentChatUser = thing;
       // this._currentMessages = result;
       const fetchedMessages: CustomMessage[] = [];
       result.forEach(mess => {
