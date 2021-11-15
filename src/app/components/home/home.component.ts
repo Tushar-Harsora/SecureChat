@@ -3,6 +3,7 @@ import { map } from 'rxjs/operators';
 import { CustomMessage } from 'src/app/_models/CustomMessage';
 import { Message } from 'src/app/_models/Message';
 import { PreviouslyContactedUser } from 'src/app/_models/PreviouslyContactedUser';
+import { AuthenticationService } from 'src/app/_services';
 import { ChatroomService } from 'src/app/_services/chatroom.service';
 
 @Component({
@@ -31,7 +32,7 @@ export class HomeComponent implements OnInit {
 
   messages: any[] = [];
 
-  constructor(private chatroomService: ChatroomService) {
+  constructor(private chatroomService: ChatroomService, private authService: AuthenticationService) {
     this.loadMessages();
     this._chatroomService = chatroomService;
     this._previousContacted = [];
@@ -50,16 +51,26 @@ export class HomeComponent implements OnInit {
   }
 
   sendMessage(event: any): void {
-    this.messages.push({
-      text: event.message,
-      date: new Date(),
-      reply: true,
-      type: 'text',
-      user: {
-        name: 'Gandalf the Grey',
-        avatar: 'https://i.gifer.com/no.gif',
-      },
-    });
+    if (this._currentChatUser.uid == -99) {
+      this.messages.push({
+        text: event.message,
+        date: new Date(),
+        reply: true,
+        type: 'text',
+        user: {
+          name: 'Gandalf the Grey',
+          avatar: 'https://i.gifer.com/no.gif',
+        },
+      });
+    } else {
+      this._currentMessages.push(new CustomMessage('text',
+      event.message, true, new Date(), this._currentChatUser));
+      this._chatroomService.sendMessage(
+        new Message(-1, this.authService.currentUserValue.uid, this._currentChatUser.uid, this._currentChatUser.chat_relation_id, event.message, 1)
+      ).subscribe(result =>{
+        console.log(result);
+      });
+    }
   }
 
   getConversation(uid: Number) {
@@ -85,7 +96,7 @@ export class HomeComponent implements OnInit {
           fetchedMessages.push(new CustomMessage('text', mess.message, fromMe, mess.message_at, this._currentChatUser))
         });
         this._currentMessages = fetchedMessages;
-        this._messagesLoaded = false;
+        this._messagesLoaded = true;
       });
     }
 
