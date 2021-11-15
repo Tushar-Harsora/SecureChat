@@ -1,24 +1,38 @@
-<div class="mainContent" fxLayoutAlign="center center" >
+<div class="mainContent" fxLayoutAlign="center center">
   <nb-layout class="chat-content">
-    <nb-sidebar class="sidebar" >
-      <ng-container class="singleUser" *ngIf="_previousLoaded; else loading" >
-        <mat-card *ngFor="let user of _previousContacted" class="singleUser" (click)="getConversation(user.uid)">
+    <nb-sidebar class="sidebar">
+      <ng-container *ngIf="_previousLoaded; else loading">
+        <mat-card class="singleUser" *ngFor="let user of _previousContacted"
+          (click)="getConversation(user.uid)">
           <mat-card-group>
             <mat-card-title>{{user.username}}</mat-card-title>
-            <h4>{{user.email}}</h4>
+            <h4 class="userEmail">{{user.email}}</h4>
+          </mat-card-group>
+        </mat-card>
+        <mat-card class="singleUser" (click)="getConversation(-99)">
+          <mat-card-group>
+            <mat-card-title>John Doe</mat-card-title>
+            <h4 class="userEmail">john@gmail.com</h4>
           </mat-card-group>
         </mat-card>
       </ng-container>
+      <ng-template #loading class="loader" style="display: flex; justify-content: center;align-items: center;">
+        <img src="../../../assets/loader.gif" alt="Loading....." width="60px" height="60px">
+      </ng-template>
     </nb-sidebar>
-    <ng-template #loading>
-      <h1>loading</h1>
-    </ng-template>
+
+    
     <nb-layout-column class="chat-area">
-      <nb-card *ngIf="!_messagesLoaded; else chatContainer">
-        <nb-card-body>
-          No Active Chat
-        </nb-card-body>
+      <nb-card *ngIf="_firstTimeLoad; else checkActiveChat" id="firstTimeLoad">
+
       </nb-card>
+      <ng-template #checkActiveChat>
+        <nb-card *ngIf="!_messagesLoaded; else chatContainer" class="noMsg">
+          <nb-card-body class="card-body">
+            <img src="../../../assets/loader.gif" alt="Loading....." width="60px" height="60px">
+          </nb-card-body>
+        </nb-card>
+      </ng-template>
       <ng-template #chatContainer>
         <nb-chat #chatComponent [title]="_currentChatUser.username" size="large" [scrollBottom]="true">
           <a *nbCustomMessage="'link'; let data" [href]="data.href" target="_blank">
@@ -34,8 +48,9 @@
             </button>
           </div>
 
-          <nb-chat-message *ngFor="let msg of _currentMessages" [type]="msg.type" [message]="msg.text" [reply]="msg.reply"
-            [sender]="msg.user.name" [date]="msg.date" [customMessageData]="msg.customMessageData" [files]="msg.files">
+          <nb-chat-message *ngFor="let msg of _currentMessages" [type]="msg.type" [message]="msg.text"
+            [reply]="msg.reply" [sender]="msg.user.name" [date]="msg.date" [customMessageData]="msg.customMessageData"
+            [files]="msg.files" [avatar]="msg.user.avatar">
           </nb-chat-message>
 
           <nb-chat-form (send)="sendMessage($event)" [dropFiles]="false">

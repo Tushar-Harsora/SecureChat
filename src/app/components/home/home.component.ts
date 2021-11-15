@@ -11,14 +11,16 @@ import { ChatroomService } from 'src/app/_services/chatroom.service';
   styleUrls: ['./home.component.sass'],
   changeDetection: ChangeDetectionStrategy.Default
 })
+
 export class HomeComponent implements OnInit {
   _chatroomService: ChatroomService;
   _previousContacted: PreviouslyContactedUser[];
   _previousLoaded: Boolean;
   _currentMessages: any[];
   _messagesLoaded: Boolean;
+  _firstTimeLoad: Boolean;
   _currentChatUser: PreviouslyContactedUser;
-  
+
   readonly tableData = {
     columns: ['First Name', 'Last Name', 'Age'],
     rows: [
@@ -34,13 +36,14 @@ export class HomeComponent implements OnInit {
     this._chatroomService = chatroomService;
     this._previousContacted = [];
     this._previousLoaded = false;
-    this._currentMessages = this.messages;
-    this._messagesLoaded = true;
+    this._currentMessages = [];
+    this._firstTimeLoad = true;
+    this._messagesLoaded = false;
     this._currentChatUser = new PreviouslyContactedUser();
   }
 
   ngOnInit(): void {
-    this._chatroomService.getPreviouslyContacted().subscribe(result =>{
+    this._chatroomService.getPreviouslyContacted().subscribe(result => {
       this._previousContacted = result;
       this._previousLoaded = true;
     });
@@ -54,30 +57,38 @@ export class HomeComponent implements OnInit {
       type: 'text',
       user: {
         name: 'Gandalf the Grey',
-        avatar: 'https://i.gifer.com/no.gif', 
+        avatar: 'https://i.gifer.com/no.gif',
       },
     });
   }
 
-  getConversation(uid: Number){
+  getConversation(uid: Number) {
+    this._firstTimeLoad = false;
+    this._messagesLoaded = false;
     console.log(`Fetching conversation for userid ${uid}`);
-    const selected = this._previousContacted.find(user => user.uid == uid);
-    const thing = selected ? selected : new PreviouslyContactedUser();
-    
-    this._chatroomService.getConversation(thing.chat_relation_id).subscribe(result =>{
-      this._currentChatUser = thing;
-      // this._currentMessages = result;
-      const fetchedMessages: CustomMessage[] = [];
-      result.forEach(mess => {
-        const fromMe: boolean = mess.receiver_id == this._currentChatUser.uid;
-        console.log(mess);
-        // console.log(`reciever ${mess.receiver_id}   from me: ${fromMe}`);
-        
-        fetchedMessages.push(new CustomMessage('text', mess.message, fromMe, mess.message_at, this._currentChatUser))
-      });
-      this._currentMessages = fetchedMessages;
+    if (uid == -99) {
+      this._currentChatUser = new PreviouslyContactedUser();
+      this._currentMessages = this.messages;
       this._messagesLoaded = true;
-    }); 
+    } else {
+      const selected = this._previousContacted.find(user => user.uid == uid);
+      this._currentChatUser = selected ? selected : new PreviouslyContactedUser();
+      // return ;
+      this._chatroomService.getConversation(this._currentChatUser.chat_relation_id).subscribe(result => {
+        // this._currentMessages = result;
+        const fetchedMessages: CustomMessage[] = [];
+        result.forEach(mess => {
+          const fromMe: boolean = mess.receiver_id == this._currentChatUser.uid;
+          console.log(mess);
+          // console.log(`reciever ${mess.receiver_id}   from me: ${fromMe}`);
+
+          fetchedMessages.push(new CustomMessage('text', mess.message, fromMe, mess.message_at, this._currentChatUser))
+        });
+        this._currentMessages = fetchedMessages;
+        this._messagesLoaded = false;
+      });
+    }
+
   }
   private loadMessages(): void {
     this.messages = [
