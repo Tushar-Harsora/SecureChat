@@ -1,27 +1,43 @@
 <div class="mainContent" fxLayoutAlign="center center">
   <nb-layout class="chat-content">
     <nb-sidebar class="sidebar">
-      <ng-container *ngIf="_previousLoaded; else loading">
-        <mat-card class="singleUser" *ngFor="let user of _previousContacted"
-          (click)="getConversation(user.uid)">
+      <div class="searchbar">
+        <mat-icon aria-hidden="false">search</mat-icon>
+        <input type="text" #searchBox (focusout)="search($event)" class="searchBox" placeholder="Search by Email">
+      </div>
+      <hr class="divider">
+      <h1>Recents</h1>
+      <ng-container *ngIf="_userSearch && _searchResult.uid != -1">
+        <mat-card class="singleUser">
           <mat-card-group>
-            <mat-card-title>{{user.username}}</mat-card-title>
-            <h4 class="userEmail">{{user.email}}</h4>
+            <mat-card-title>{{_searchResult.username}}</mat-card-title>
+            <h4 class="userEmail">{{_searchResult.email}}</h4>
           </mat-card-group>
         </mat-card>
-        <mat-card class="singleUser" (click)="getConversation(-99)">
-          <mat-card-group>
-            <mat-card-title>John Doe</mat-card-title>
-            <h4 class="userEmail">john@gmail.com</h4>
-          </mat-card-group>
-        </mat-card>
+      </ng-container>
+      <ng-container *ngIf="!_userSearch">
+        <ng-container *ngIf="_previousLoaded; else loading">
+          <mat-card class="singleUser" *ngFor="let user of _previousContacted" (click)="getConversation(user.uid)">
+            <mat-card-group>
+              <mat-card-title class="cardTitle">{{user.username}} <span *ngIf="user.unread_counts != 0"
+                  class="unreadMsg">{{user.unread_counts}} unread messages</span></mat-card-title>
+              <h4 class="userEmail">{{user.email}} </h4>
+            </mat-card-group>
+          </mat-card>
+          <mat-card class="singleUser" (click)="getConversation(-99)">
+            <mat-card-group>
+              <mat-card-title>John Doe</mat-card-title>
+              <h4 class="userEmail">john@gmail.com</h4>
+            </mat-card-group>
+          </mat-card>
+        </ng-container>
       </ng-container>
       <ng-template #loading class="loader" style="display: flex; justify-content: center;align-items: center;">
         <img src="../../../assets/loader.gif" alt="Loading....." width="60px" height="60px">
       </ng-template>
-    </nb-sidebar>
+      </nb-sidebar>
 
-    
+
     <nb-layout-column class="chat-area">
       <nb-card *ngIf="_firstTimeLoad; else checkActiveChat" id="firstTimeLoad">
 

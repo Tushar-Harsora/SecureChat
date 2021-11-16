@@ -23,7 +23,7 @@ export class AuthenticationService {
     }
 
     login(Email: string, signedText: string) {
-        return this.http.post<User>(`${environment.apiUrl}/api/User/AuthenticateByEmail`, { Email, signedText })
+        return this.http.post<User>(`${environment.apiUrl}/User/AuthenticateByEmail`, { Email, signedText })
             .pipe(map(user => {
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
                 localStorage.setItem('currentUser', JSON.stringify(user));
@@ -33,7 +33,7 @@ export class AuthenticationService {
     }
 
     register(email: string, username: string, public_key: string){
-        return this.http.post<any>(`${environment.apiUrl}/api/User/RegisterByEmail`, {email, username, public_key})
+        return this.http.post<any>(`${environment.apiUrl}/User/RegisterByEmail`, {email, username, public_key})
             .pipe(map(response => {
                 console.log(response);
                 return response;

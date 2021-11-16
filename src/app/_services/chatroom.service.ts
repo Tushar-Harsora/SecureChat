@@ -5,6 +5,7 @@ import { map} from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { PreviouslyContactedUser } from '../_models/PreviouslyContactedUser';
 import { Message } from '../_models/Message';
+import { User } from '../_models/User';
 
 @Injectable({
   providedIn: 'root'
@@ -26,6 +27,13 @@ export class ChatroomService {
       .pipe(map(response => {
         return response;
       }));
+  }
+
+  searchUser(email: String){
+    return this.http.post<User>(`${environment.apiUrl}/User/GetUserFromEmail`, {email})
+      .pipe(map(response => {
+        return response;
+      })); 
   }
 
   sendMessage(message: Message){

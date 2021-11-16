@@ -3,6 +3,7 @@ import { map } from 'rxjs/operators';
 import { CustomMessage } from 'src/app/_models/CustomMessage';
 import { Message } from 'src/app/_models/Message';
 import { PreviouslyContactedUser } from 'src/app/_models/PreviouslyContactedUser';
+import { User } from 'src/app/_models/User';
 import { AuthenticationService } from 'src/app/_services';
 import { ChatroomService } from 'src/app/_services/chatroom.service';
 
@@ -21,6 +22,8 @@ export class HomeComponent implements OnInit {
   _messagesLoaded: Boolean;
   _firstTimeLoad: Boolean;
   _currentChatUser: PreviouslyContactedUser;
+  _userSearch: Boolean;
+  _searchResult: User;
 
   readonly tableData = {
     columns: ['First Name', 'Last Name', 'Age'],
@@ -41,6 +44,8 @@ export class HomeComponent implements OnInit {
     this._firstTimeLoad = true;
     this._messagesLoaded = false;
     this._currentChatUser = new PreviouslyContactedUser();
+    this._userSearch = false;
+    this._searchResult = new User();
   }
 
   ngOnInit(): void {
@@ -64,10 +69,10 @@ export class HomeComponent implements OnInit {
       });
     } else {
       this._currentMessages.push(new CustomMessage('text',
-      event.message, true, new Date(), this._currentChatUser));
+        event.message, true, new Date(), this._currentChatUser));
       this._chatroomService.sendMessage(
         new Message(-1, this.authService.currentUserValue.uid, this._currentChatUser.uid, this._currentChatUser.chat_relation_id, event.message, 1)
-      ).subscribe(result =>{
+      ).subscribe(result => {
         console.log(result);
       });
     }
@@ -80,7 +85,7 @@ export class HomeComponent implements OnInit {
     if (uid == -99) {
       this._currentChatUser = new PreviouslyContactedUser();
       this._currentMessages = this.messages;
-      this._messagesLoaded = true;
+      // this._messagesLoaded = true;
     } else {
       const selected = this._previousContacted.find(user => user.uid == uid);
       this._currentChatUser = selected ? selected : new PreviouslyContactedUser();
@@ -97,8 +102,25 @@ export class HomeComponent implements OnInit {
         });
         this._currentMessages = fetchedMessages;
         this._messagesLoaded = true;
+        const selected = this._previousContacted.find(user => user.uid == uid);
+        if (selected != null) {
+          selected.unread_counts = 0;
+        }
       });
     }
+
+  }
+  search(event: any) {
+    var searchText = event.target.value;
+    if (searchText != "") {
+      this._chatroomService.searchUser(event.target.value).subscribe(result => {
+        this._userSearch = true;
+        this._searchResult = result;
+      });
+    } else {
+      this._userSearch = false;
+    }
+
 
   }
   private loadMessages(): void {
@@ -151,3 +173,4 @@ export class HomeComponent implements OnInit {
     ]
   }
 }
+
