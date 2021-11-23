@@ -7,6 +7,8 @@
 # Only exists if Bazel was run
 /bazel-out
 
+private_key.txt
+
 # dependencies
 /node_modules
 
