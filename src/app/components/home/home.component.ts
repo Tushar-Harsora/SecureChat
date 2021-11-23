@@ -85,11 +85,11 @@ export class HomeComponent implements OnInit {
     if (uid == -99) {
       this._currentChatUser = new PreviouslyContactedUser();
       this._currentMessages = this.messages;
-      // this._messagesLoaded = true;
+      this._messagesLoaded = true;
     } else {
       const selected = this._previousContacted.find(user => user.uid == uid);
       this._currentChatUser = selected ? selected : new PreviouslyContactedUser();
-      // return ;
+      return;
       this._chatroomService.getConversation(this._currentChatUser.chat_relation_id).subscribe(result => {
         // this._currentMessages = result;
         const fetchedMessages: CustomMessage[] = [];
