@@ -6,6 +6,9 @@ import { PreviouslyContactedUser } from 'src/app/_models/PreviouslyContactedUser
 import { User } from 'src/app/_models/User';
 import { AuthenticationService } from 'src/app/_services';
 import { ChatroomService } from 'src/app/_services/chatroom.service';
+import { SessionStorageService } from 'src/app/_services/SessionStorageService.service';
+
+declare var JSEncrypt: any;
 
 @Component({
   selector: 'app-home',
@@ -35,7 +38,8 @@ export class HomeComponent implements OnInit {
 
   messages: any[] = [];
 
-  constructor(private chatroomService: ChatroomService, private authService: AuthenticationService) {
+  constructor(private chatroomService: ChatroomService, private authService: AuthenticationService,
+    private localStore: SessionStorageService) {
     this.loadMessages();
     this._chatroomService = chatroomService;
     this._previousContacted = [];
@@ -70,9 +74,17 @@ export class HomeComponent implements OnInit {
     } else {
       this._currentMessages.push(new CustomMessage('text',
         event.message, true, new Date(), this._currentChatUser));
+      
+      const recipientPublickey = this._currentChatUser.public_key;
+      const jsenc = new JSEncrypt({ default_key_size: 2048 });
+      jsenc.setPublicKey(recipientPublickey);
+      const encMessage = jsenc.encrypt(event.message);
+      console.log("Encrypting using ", recipientPublickey);
+
       this._chatroomService.sendMessage(
-        new Message(-1, this.authService.currentUserValue.uid, this._currentChatUser.uid, this._currentChatUser.chat_relation_id, event.message, 1)
+        new Message(-1, this.authService.currentUserValue.uid, this._currentChatUser.uid, this._currentChatUser.chat_relation_id, encMessage, 1)
       ).subscribe(result => {
+        this.localStore.storeValue(result, event.message);
         console.log(result);
       });
     }
@@ -89,16 +101,28 @@ export class HomeComponent implements OnInit {
     } else {
       const selected = this._previousContacted.find(user => user.uid == uid);
       this._currentChatUser = selected ? selected : new PreviouslyContactedUser();
-      return;
       this._chatroomService.getConversation(this._currentChatUser.chat_relation_id).subscribe(result => {
+        const priv_key = this.localStore.getValue('private_key');
+        const jsenc = new JSEncrypt({ default_key_size: 2048 });
+        jsenc.setPrivateKey(priv_key);
+        console.log("Decrypting using ", priv_key);
+        const temp = jsenc.encrypt("Hello");
         // this._currentMessages = result;
         const fetchedMessages: CustomMessage[] = [];
         result.forEach(mess => {
           const fromMe: boolean = mess.receiver_id == this._currentChatUser.uid;
-          console.log(mess);
+          
+          const decrypted_message = jsenc.decrypt(mess.message);
+          console.log(decrypted_message);
           // console.log(`reciever ${mess.receiver_id}   from me: ${fromMe}`);
 
-          fetchedMessages.push(new CustomMessage('text', mess.message, fromMe, mess.message_at, this._currentChatUser))
+          if(fromMe){
+            const stored_message: string = this.localStore.getValue(mess.id.toString(10));
+            fetchedMessages.push(new CustomMessage('text', stored_message, fromMe, mess.message_at, this._currentChatUser));
+          }
+          else{
+            fetchedMessages.push(new CustomMessage('text', decrypted_message, fromMe, mess.message_at, this._currentChatUser));
+          }
         });
         this._currentMessages = fetchedMessages;
         this._messagesLoaded = true;
