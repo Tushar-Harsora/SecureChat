@@ -5,6 +5,7 @@ export class PreviouslyContactedUser {
     username: string;
     chat_relation_id : Number;
     unread_counts: Number;
+    public_key: string;
 
     constructor(){
         this.uid = -99;
@@ -13,5 +14,6 @@ export class PreviouslyContactedUser {
         this.username = "John Doe";
         this.chat_relation_id = -99;
         this.unread_counts = 0;
+        this.public_key = "";
     }
 }

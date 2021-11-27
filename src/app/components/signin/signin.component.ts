@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { first } from 'rxjs/operators';
 import { AuthenticationService } from 'src/app/_services';
 import * as CryptoJS from 'crypto-js';
+import { SessionStorageService } from 'src/app/_services/SessionStorageService.service';
 
 declare var JSEncrypt: any;
 
@@ -19,7 +20,8 @@ export class SigninComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
-    private authenticationService: AuthenticationService
+    private authenticationService: AuthenticationService,
+    private localStore: SessionStorageService
     ) {
       this.errorText = "";
       if(this.authenticationService.currentUserValue.token && this.authenticationService.currentUserValue.token !== "")
@@ -46,6 +48,7 @@ export class SigninComponent implements OnInit {
         .subscribe(
             data => {
               console.log(data);
+              this.localStore.storeValue('private_key', private_key)
               this.router.navigate(["home"]);
             },
             error => {
